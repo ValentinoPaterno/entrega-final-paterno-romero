@@ -18,23 +18,19 @@ from django.contrib.auth.hashers import make_password
 @login_required 
 def inicio(request):
     avatares = Avatar.objects.filter(user=request.user.id)
-    
     return render(request, 'inicio.html', {'url': avatares[0].imagen.url})
    
 def login_request(request):
     avatares = Avatar.objects.filter(user=request.user.id)
-
-    if request.method == "POST":
-        # Comprobar si se ha enviado el formulario de inicio de sesión como invitado
+    if request.method == 'POST':
         if 'login_invitado' in request.POST:
             # Autenticar un usuario invitado
             username = 'invitado'
             password = 'invitado123'
             user = authenticate(username=username, password=password)
             login(request, user)
-            return render(request,"inicio.html", {"mensaje":"Usted a ingresado como invitado Bienvenido!"} )
+            return render(request,"inicio.html", {"mensaje":"Usted a ingresado como invitado Bienvenido!", "invitado": True})
         else:
-            # Procesar el inicio de sesión normal
             form = AuthenticationForm(request, data=request.POST)
             if form.is_valid():
                 usuario = form.cleaned_data.get('username')
@@ -42,16 +38,16 @@ def login_request(request):
                 user = authenticate(username=usuario, password=contra)
                 if user is not None:
                     login(request, user)
-                    return render(request,"inicio.html",  {"mensaje":f"Bienvenido {usuario} :)"} )
+                    return render(request,"inicio.html",  {"mensaje":f"Bienvenido {usuario} :)", "invitado": False} )
                 else:
                     return render(request, "login.html", {"form": form, "mensaje": "Error, datos incorrectos"})
             else:
                 return render(request, "login.html", {"form": form, "mensaje": "Error, formulario erroneo"})
     else:
         form = AuthenticationForm()
-        return render(request, "login.html", {"form": form})
-
-
+        return render(request, "login.html", {"form": form})                
+def login_invitado(request):
+    return render(request, 'inicio.html')
 def register(request):
 
       if request.method == 'POST':
@@ -92,40 +88,6 @@ def cursos(request):
         miFormulario = CursoFormulario()
 
     return render(request, "cursos.html", {'miFormulario':miFormulario,'url': avatares[0].imagen.url})
-
-def leerProfesores(request):
-    profesores = Profesor.objects.all()
-    contexto = {"profesores":profesores}
-    return render(request, "leerProfesores.html", contexto)
-
-def eliminarProfesor(request, profesor_nombre):
-    profesor = Profesor.objects.get(nombre=profesor_nombre)
-    profesor.delete()
-
-    profesores = Profesor.objects.all()
-    contexto = {"profesores":profesores}
-    return render(request, "leerProfesores.html", contexto)
-
-def editarProfesor(request, profesor_nombre):
-    profesor = Profesor.objects.get(nombre=profesor_nombre)
-    if request.method == 'POST':
-        miFormulario = ProfesorFormulario(request.POST)
-        print(miFormulario)
-
-        if miFormulario.is_valid:
-            informacion = miFormulario.cleaned_data
-
-            profesor.nombre = informacion['nombre']
-            profesor.apellido = informacion['apellido']
-            profesor.email = informacion['email']
-            profesor.profesion = informacion['profesion']
-
-            profesor.save()
-            return render(request, "inicio.html")
-    else:
-        miFormulario = ProfesorFormulario(initial={'nombre': profesor.nombre, 'apellido': profesor.apellido, 'email': profesor.email, 'profesion': profesor.profesion})
-    return render(request, "editarprofesor.html", {"miFormulario":miFormulario, "profesor_nombre": profesor_nombre})
-
 def profesores(request):
     avatares = Avatar.objects.filter(user=request.user.id)
     
@@ -150,10 +112,8 @@ def profesores(request):
         miFormulario = ProfesorFormulario()
 
     return render(request, "Profesores.html", {'miFormulario':miFormulario,'url': avatares[0].imagen.url})
-
 def busquedaCamada(request):
     return render(request, 'inicio.html')
-
 def buscar(request):
     if request.GET['camada']:
         camada = request.GET['camada']
@@ -166,7 +126,6 @@ def buscar(request):
 
     #return HttpResponse(respuesta)
     return render(request, 'inicio.html', {"respuesta":respuesta}) 
-
 def estudiantes(request):
     avatares = Avatar.objects.filter(user=request.user.id)
     
@@ -190,7 +149,6 @@ def estudiantes(request):
         miFormulario = EstudiantesFormulario()
 
     return render(request, "estudiantes.html", {'miFormulario':miFormulario,'url': avatares[0].imagen.url})
-
 def entregables(request):
     avatares = Avatar.objects.filter(user=request.user.id)
 
@@ -214,7 +172,6 @@ def entregables(request):
         miFormulario = EntregableFormulario()
 
     return render(request, "entregables.html", {'miFormulario':miFormulario,'url': avatares[0].imagen.url})
-
 @login_required
 def editarPerfil(request):
     usuario = request.user
@@ -240,7 +197,6 @@ def editarPerfil(request):
 
 
     return render(request, "editarPerfil.html", {"miFormulario":miFormulario, "usuario":usuario})
-
 @login_required
 def agregarAvatar(request):
       if request.method == 'POST':
@@ -263,9 +219,6 @@ def agregarAvatar(request):
             miFormulario= AvatarFormulario() #Formulario vacio para construir el html
 
       return render(request, "agregarAvatar.html", {"miFormulario":miFormulario})
-
-def custom_404(request, exception):
-    return render(request, '404.html', status=404)
 
 def proximamente(request):
     return render(request, 'proximamente.html')
@@ -296,8 +249,7 @@ class CursoDelete(DeleteView):
     success_url = "/AppCoder/curso/list"
     
 
-def login_invitado(request):
-    return render(request, 'inicio.html')
+
 
 def aboutus(request):
     return render(request, 'aboutus.html')

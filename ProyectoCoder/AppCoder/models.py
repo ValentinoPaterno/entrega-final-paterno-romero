@@ -11,7 +11,6 @@ class Curso(models.Model):
     def __str__(self):
         return f"Nombre: {self.nombre} - Camada: {self.camada}"
 
-
 class Estudiante(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
@@ -19,7 +18,6 @@ class Estudiante(models.Model):
 
     def __str__(self):
         return f"Nombre: {self.nombre} - Apellido: {self.apellido} - Email: {self.email}"
-
 
 class Profesor(models.Model):
     nombre = models.CharField(max_length=30)
@@ -30,7 +28,6 @@ class Profesor(models.Model):
     def __str__(self):
         return f"Nombre: {self.nombre} - Apellido: {self.apellido} - Email: {self.email} - Profesion: {self.profesion}"
 
-
 class Entregable(models.Model):
     nombre = models.CharField(max_length=30)
     fechaDeEntrega = models.DateField()
@@ -39,3 +36,6 @@ class Entregable(models.Model):
 class Avatar(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='avatares', null=True, blank=True)
+
+    def __str__(self):
+        return (f'User: {self.user} || Imagen: {self.imagen}')

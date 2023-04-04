@@ -26,7 +26,7 @@
     <body>
         </form>
         <!-- Navigation-->
-  <nav class="navbar navbar-light bg-light static-top">
+        <nav class="navbar navbar-light bg-light static-top">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'AppCoder:Inicio' %}">Inicio</a>
                 <a class="navbar-brand" href="{% url 'AppCoder:Cursos' %}"> Cursos</a>
@@ -34,12 +34,9 @@
                 <a class="navbar-brand" href="{% url 'AppCoder:Profesores' %}"> Profesores</a>
                 <a class="navbar-brand" href="{% url 'AppCoder:Entregables' %}"> Entregables</a>
                 <a class="navbar-brand" href="{% url 'AppCoder:About_Us' %}"> About Us</a>
-                {% if not request.user.is_login_invitado %}
-                <a class="btn btn-primary" href="{% url 'AppCoder:Login' %}">Iniciar Sesión</a>
-                <a class="btn btn-primary" href="{% url 'AppCoder:Register' %}">Registrarse</a>
-                {% endif %}
+                
 
-                {% if request.user.is_authenticated %}
+                
                 
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
@@ -53,13 +50,14 @@
                         <a class="dropdown-item" href="{% url 'AppCoder:Logout' %}">Cerrar Sesión</a>
                     </div>
                 </div>
-                {% endif %}
+                
                
             </div>
         </nav>
         <!-- Masthead-->
-
-            </div>        
+        {% block if_invitado %}
+        {% endblock %}
+                   
         {% block contenidoQueCambia %}
         {% endblock %}
 
